@@ -25,46 +25,46 @@ vector_store_instance: Optional[VectorStore] = None
 gemini_client: Optional[genai.Client] = None
 
 
+# @asynccontextmanager
+# async def lifespan(app: FastAPI):
+#     """Lifecycle hook: initialize ChromaDB and Gemini client on startup."""
+#     global retriever_instance, vector_store_instance, gemini_client
+#     print("Initializing Portfolio RAG System...")
+
+#     # 1. Initialize persistent vector store and retriever
+#     retriever_instance, vector_store_instance, _ = initialize_rag_system(force_reindex=False)
+
+#     # 2. Initialize Gemini API Client if key is provided
+#     api_key = os.getenv("GEMINI_API_KEY")
+#     if api_key:
+#         try:
+#             if gemini_client is not None and hasattr(gemini_client, "close"):
+#                 gemini_client.close()
+#             gemini_client = genai.Client(api_key=api_key)
+#             print(f"Gemini Client connected successfully (Model: {GEMINI_MODEL_NAME}).")
+#         except Exception as err:
+#             print(f"Failed to initialize Gemini Client: {err}")
+#             gemini_client = None
+#     else:
+#         print("GEMINI_API_KEY is not set. The server will return grounded excerpts from ChromaDB.")
+
+#     yield
+
+#     print("Shutting down Portfolio RAG server.")
+#     if gemini_client is not None and hasattr(gemini_client, "close"):
+#         try:
+#             gemini_client.close()
+#         except Exception as err:
+#             print(f"Failed to close Gemini Client cleanly: {err}")
+#         finally:
+#             gemini_client = None
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    global retriever_instance, vector_store_instance, gemini_client
-
-    print("🚀 SERVER: lifespan started", flush=True)
-
-    print("📦 SERVER: initializing RAG...", flush=True)
-    retriever_instance, vector_store_instance, _ = initialize_rag_system(
-        force_reindex=False
-    )
-    print("✅ SERVER: RAG initialized", flush=True)
-
-    api_key = os.getenv("GEMINI_API_KEY")
-
-    if api_key:
-        try:
-            print("🔑 SERVER: initializing Gemini...", flush=True)
-
-            if gemini_client is not None and hasattr(gemini_client, "close"):
-                gemini_client.close()
-
-            gemini_client = genai.Client(api_key=api_key)
-
-            print(
-                f"✅ SERVER: Gemini connected ({GEMINI_MODEL_NAME})",
-                flush=True,
-            )
-
-        except Exception as err:
-            print(f"❌ SERVER: Gemini initialization failed: {err}", flush=True)
-            gemini_client = None
-    else:
-        print("⚠️ SERVER: GEMINI_API_KEY not set", flush=True)
-
-    print("🚀 SERVER: yielding to FastAPI", flush=True)
-
+    print("🚀 SERVER STARTING", flush=True)
     yield
-
-    print("🛑 SERVER: shutting down", flush=True)
-
+    print("🛑 SERVER STOPPING", flush=True)
+    
 app = FastAPI(
     title="Aman Singh Chauhan — Portfolio AI Assistant API",
     description="RAG-powered conversational API answering queries about Aman's profile, projects, and skills.",
